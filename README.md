@@ -79,7 +79,7 @@ At install, the extension requests only the specific keyless hosts it calls dire
 
 ### Keys for gated agent sources
 
-Open **Settings → API keys** and save a key under a short name (e.g. `FINNHUB`). The agent references it as a `{{FINNHUB}}` placeholder when building a request, and the value is substituted at fetch time. Keys are stored locally and are never sent to OpenAI. If a widget needs a key you have not saved, it shows an "Add key" button.
+Open **Settings -> API keys** and save a key under a short name (e.g. `FINNHUB`). The agent references it as a `{{FINNHUB}}` placeholder when building a request, and the value is substituted at fetch time. Keys are stored locally and are never sent to OpenAI. If a widget needs a key you have not saved, it shows an "Add key" button.
 
 ## Data sources
 
