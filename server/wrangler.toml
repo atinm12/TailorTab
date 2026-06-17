@@ -1,0 +1,17 @@
+name = "smart-homepage-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# KV namespace for rate-limit counters + response cache.
+# Create it once with:  wrangler kv namespace create KV
+# then paste the returned id (and a preview id) below.
+[[kv_namespaces]]
+binding = "KV"
+id = "d71765cd76dc4cb8b0b727395b4e4356"
+preview_id = "7148f8cec6bf4823954f73a69e67d3d2"
+
+# OPENAI_API_KEY is a SECRET — do NOT put it here. Set it with:
+#   wrangler secret put OPENAI_API_KEY
+#
+# After you publish the extension, optionally lock the API to it:
+#   wrangler secret put EXTENSION_ID   (the chrome-extension id)

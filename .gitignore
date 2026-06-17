@@ -1,0 +1,15 @@
+node_modules
+dist
+*.local
+.DS_Store
+*.log
+*.tsbuildinfo
+.claude/
+
+# Real API keys / local secrets — never commit
+src/config.ts
+.dev.vars
+.env
+
+# Cloudflare Wrangler local state
+.wrangler/
