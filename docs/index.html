@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TailorTab — Your new tab, built around you</title>
+  <meta name="description" content="TailorTab is an AI-powered Chrome new tab page. Just tell it what you want to see and it builds a live, personalized dashboard." />
+  <style>
+    :root {
+      --bg: #0a0e18;
+      --bg-soft: #11182b;
+      --card: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.10);
+      --text: #eaf0ff;
+      --muted: #9aa6c2;
+      --accent: #ffd27a;
+      --accent2: #6ea8ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 70% -10%, rgba(110,168,255,0.18), transparent 60%),
+        radial-gradient(900px 500px at 10% 10%, rgba(255,210,122,0.10), transparent 55%),
+        linear-gradient(160deg, #0a0e18 0%, #0d1326 55%, #161232 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+    /* Demo banner */
+    .banner {
+      background: rgba(255, 210, 122, 0.12);
+      border-bottom: 1px solid rgba(255, 210, 122, 0.3);
+      color: var(--accent);
+      text-align: center;
+      font-size: 0.85rem;
+      padding: 10px 16px;
+    }
+
+    /* Hero */
+    header { text-align: center; padding: 86px 0 56px; }
+    .logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; letter-spacing: -0.5px; font-size: 1.05rem;
+      color: var(--muted); margin-bottom: 28px;
+    }
+    .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      line-height: 1.08; letter-spacing: -1.5px; font-weight: 800;
+      background: linear-gradient(120deg, #ffffff, #bcd0ff 55%, var(--accent));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      margin-bottom: 20px;
+    }
+    .tagline { font-size: clamp(1.05rem, 2.5vw, 1.3rem); color: var(--muted); max-width: 620px; margin: 0 auto 36px; }
+    .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 26px; border-radius: 12px; font-weight: 600; font-size: 0.98rem;
+      text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      border: 1px solid var(--border);
+    }
+    .btn-primary { background: linear-gradient(120deg, var(--accent2), #9b7bff); color: #07101f; border: none; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(110,168,255,0.35); }
+    .btn-ghost { color: var(--text); background: var(--card); }
+    .btn-ghost:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
+
+    /* Video */
+    .video-section { padding: 28px 0 12px; }
+    .video-frame {
+      position: relative; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border); background: #000;
+      aspect-ratio: 16 / 9; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    .video-frame iframe, .video-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .video-placeholder {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      color: var(--muted); background: linear-gradient(160deg, #11182b, #1a1430);
+      text-align: center; padding: 24px;
+    }
+
+    /* Sections */
+    section { padding: 56px 0; }
+    h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); letter-spacing: -0.5px; margin-bottom: 8px; }
+    .section-sub { color: var(--muted); margin-bottom: 32px; }
+
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .feature {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px;
+    }
+    .feature .tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; }
+    .feature h3 { font-size: 1.12rem; margin: 10px 0 6px; }
+    .feature p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Install steps */
+    .steps { counter-reset: step; display: grid; gap: 16px; }
+    .step {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px 18px 60px; position: relative;
+    }
+    .step::before {
+      counter-increment: step; content: counter(step);
+      position: absolute; left: 18px; top: 18px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(120deg, var(--accent2), #9b7bff);
+      color: #07101f; font-weight: 700; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step h4 { font-size: 1rem; margin-bottom: 4px; }
+    .step p { color: var(--muted); font-size: 0.92rem; }
+    code, pre {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+      border-radius: 8px; color: #d6e2ff;
+    }
+    code { padding: 2px 7px; font-size: 0.86rem; }
+    pre { padding: 14px 16px; overflow-x: auto; font-size: 0.86rem; margin-top: 10px; }
+
+    footer { text-align: center; padding: 48px 0 64px; color: var(--muted); font-size: 0.88rem; border-top: 1px solid var(--border); margin-top: 24px; }
+    footer a { color: var(--accent2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    Demo &amp; project landing page — the Chrome Web Store listing is pending review. Install instructions below.
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo"><span class="dot"></span> TailorTab</div>
+      <h1>Your new tab,<br />built around you.</h1>
+      <p class="tagline">
+        Just tell it what you want to see — TailorTab turns your new tab into a live,
+        personalized dashboard, powered by an AI agent that sources data on demand.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-ghost" href="#install">How to install</a>
+      </div>
+    </header>
+
+    <div class="video-section">
+      <div class="video-frame">
+        <!-- Replace the placeholder below with your demo video embed, e.g.:
+             <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe> -->
+        <div class="video-placeholder" id="videoPlaceholder">
+          <div style="font-size:2.4rem;">▶</div>
+          <div>Demo video coming here</div>
+          <div style="font-size:0.82rem; opacity:0.7;">Paste your YouTube/Loom embed into <code>docs/index.html</code></div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <h2>What it does</h2>
+      <p class="section-sub">Ordered by what makes it powerful.</p>
+      <div class="features">
+        <div class="feature">
+          <div class="tag">The Agent</div>
+          <h3>Sources any API on demand</h3>
+          <p>Ask for something it was never hardcoded to do — like live ISS tracking — and the AI agent finds a public API, calls it, and renders it as a widget.</p>
+        </div>
+        <div class="feature">
+          <div class="tag">Natural language</div>
+          <h3>One prompt, many widgets</h3>
+          <p>"Steelers news, AAPL and TSLA prices, weather in Pittsburgh" becomes three separate widgets, laid out automatically.</p>
+        </div>
+        <div class="feature">
+          <div class="tag">Live data</div>
+          <h3>No API keys needed</h3>
+          <p>Stocks, news, weather, and crypto stream in live — no sign-ups or keys. The complexity is handled on the backend.</p>
+        </div>
+        <div class="feature">
+          <div class="tag">Profiles</div>
+          <h3>Tailored dashboards in one click</h3>
+          <p>Finance Bro opens with a live watchlist and market charts. Athlete, Techie, Newspaper, Local, and more — each ready instantly.</p>
+        </div>
+        <div class="feature">
+          <div class="tag">Personalization</div>
+          <h3>Yours, and it stays that way</h3>
+          <p>Widgets persist across every new tab. Customize the clock, fonts, timezone, and rotating backgrounds in a clean dark UI.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <h2>Install it (load unpacked)</h2>
+      <p class="section-sub">While the Chrome Web Store listing is under review, you can run TailorTab locally in a couple of minutes.</p>
+      <div class="steps">
+        <div class="step">
+          <h4>Clone the repo</h4>
+          <p>Download the code from GitHub.</p>
+          <pre>git clone https://github.com/atinm12/TailorTab.git
+cd TailorTab</pre>
+        </div>
+        <div class="step">
+          <h4>Install dependencies &amp; build</h4>
+          <p>Requires <a style="color:var(--accent2)" href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. This produces the <code>dist/</code> folder.</p>
+          <pre>npm install
+npm run build</pre>
+        </div>
+        <div class="step">
+          <h4>Open Chrome extensions</h4>
+          <p>Go to <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top-right toggle).</p>
+        </div>
+        <div class="step">
+          <h4>Load unpacked</h4>
+          <p>Click <strong>Load unpacked</strong> and select the <code>dist/</code> folder inside the project.</p>
+        </div>
+        <div class="step">
+          <h4>Open a new tab</h4>
+          <p>That's it — TailorTab now powers your new tab page. Type what you want to see, or pick a profile.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>TailorTab — an AI-powered new tab dashboard.</p>
+      <p style="margin-top:6px;">
+        <a href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">Source on GitHub</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
