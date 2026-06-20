@@ -3,151 +3,443 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TailorTab — Your new tab, built around you</title>
-  <meta name="description" content="TailorTab is an AI-powered Chrome new tab page. Just tell it what you want to see and it builds a live, personalized dashboard." />
+  <title>TailorTab — The new tab page that builds itself</title>
+  <meta name="description" content="Tell it what you want. An AI agent sources the data, live, and renders your new tab as a personalized dashboard. No keys. No setup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0a0e18;
-      --bg-soft: #11182b;
-      --card: rgba(255, 255, 255, 0.04);
-      --border: rgba(255, 255, 255, 0.10);
-      --text: #eaf0ff;
-      --muted: #9aa6c2;
-      --accent: #ffd27a;
-      --accent2: #6ea8ff;
+      --bg: #0a0a0a;
+      --bg-1: #0e0e0e;
+      --bg-2: #141414;
+      --line: #1f1f1f;
+      --line-2: #2a2a2a;
+      --text: #f2f2f0;
+      --muted: #8a8a85;
+      --dim: #5c5c58;
+      --accent: #3ee07f;
+      --accent-dim: #1f7a45;
+      --warn: #e0a33e;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--sans);
+      background: var(--bg);
       color: var(--text);
-      background:
-        radial-gradient(1200px 600px at 70% -10%, rgba(110,168,255,0.18), transparent 60%),
-        radial-gradient(900px 500px at 10% 10%, rgba(255,210,122,0.10), transparent 55%),
-        linear-gradient(160deg, #0a0e18 0%, #0d1326 55%, #161232 100%);
-      min-height: 100vh;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+    a { color: inherit; }
 
-    /* Demo banner */
-    .banner {
-      background: rgba(255, 210, 122, 0.12);
-      border-bottom: 1px solid rgba(255, 210, 122, 0.3);
-      color: var(--accent);
-      text-align: center;
-      font-size: 0.85rem;
-      padding: 10px 16px;
+    /* ---------- nav ---------- */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(10px);
+      background: rgba(10,10,10,0.7);
+      border-bottom: 1px solid var(--line);
     }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .brand { font-family: var(--mono); font-weight: 700; letter-spacing: -0.5px; font-size: 0.98rem; display: flex; align-items: center; gap: 9px; }
+    .brand .sq { width: 11px; height: 11px; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+    .nav-links { display: flex; gap: 26px; font-family: var(--mono); font-size: 0.82rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover { color: var(--text); }
 
-    /* Hero */
-    header { text-align: center; padding: 86px 0 56px; }
-    .logo {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-weight: 700; letter-spacing: -0.5px; font-size: 1.05rem;
-      color: var(--muted); margin-bottom: 28px;
+    /* ---------- shared section bits ---------- */
+    section { padding: 110px 0; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      font-family: var(--mono); font-size: 0.74rem; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
     }
-    .logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
-    h1 {
-      font-size: clamp(2.4rem, 6vw, 3.8rem);
-      line-height: 1.08; letter-spacing: -1.5px; font-weight: 800;
-      background: linear-gradient(120deg, #ffffff, #bcd0ff 55%, var(--accent));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      margin-bottom: 20px;
+    .eyebrow .idx { color: var(--dim); }
+    h2 { font-family: var(--mono); font-weight: 800; font-size: clamp(1.7rem, 4vw, 2.6rem); letter-spacing: -1px; line-height: 1.05; margin-bottom: 16px; }
+    .lead { color: var(--muted); font-size: 1.05rem; max-width: 620px; }
+
+    .badge {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 1px;
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 11px; border: 1px solid var(--line-2); border-radius: 4px;
+      color: var(--muted); text-transform: uppercase;
     }
-    .tagline { font-size: clamp(1.05rem, 2.5vw, 1.3rem); color: var(--muted); max-width: 620px; margin: 0 auto 36px; }
-    .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    /* ---------- hero ---------- */
+    .hero { padding: 90px 0 80px; border-bottom: 1px solid var(--line); position: relative; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+    .hero h1 {
+      font-family: var(--mono); font-weight: 800;
+      font-size: clamp(2.4rem, 5.4vw, 4rem); line-height: 1.0;
+      letter-spacing: -2px; margin: 22px 0 24px;
+    }
+    .hero h1 .g { color: var(--accent); }
+    .hero p.sub { color: var(--muted); font-size: 1.12rem; max-width: 520px; margin-bottom: 32px; }
+    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn {
+      font-family: var(--mono); font-size: 0.86rem; font-weight: 500;
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 26px; border-radius: 12px; font-weight: 600; font-size: 0.98rem;
-      text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      border: 1px solid var(--border);
+      padding: 13px 22px; border-radius: 5px; text-decoration: none;
+      border: 1px solid var(--line-2); transition: all .15s;
     }
-    .btn-primary { background: linear-gradient(120deg, var(--accent2), #9b7bff); color: #07101f; border: none; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(110,168,255,0.35); }
-    .btn-ghost { color: var(--text); background: var(--card); }
-    .btn-ghost:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
+    .btn-primary { background: var(--accent); color: #04140a; border-color: var(--accent); font-weight: 700; }
+    .btn-primary:hover { box-shadow: 0 0 26px rgba(62,224,127,0.45); transform: translateY(-1px); }
+    .btn-ghost { color: var(--text); background: transparent; }
+    .btn-ghost:hover { border-color: var(--muted); background: var(--bg-2); }
 
-    /* Video */
-    .video-section { padding: 28px 0 12px; }
-    .video-frame {
-      position: relative; border-radius: 16px; overflow: hidden;
-      border: 1px solid var(--border); background: #000;
-      aspect-ratio: 16 / 9; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    /* ---------- terminal mockup ---------- */
+    .terminal {
+      background: #070707; border: 1px solid var(--line-2); border-radius: 8px;
+      overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      font-family: var(--mono); font-size: 0.82rem;
     }
-    .video-frame iframe, .video-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    .video-placeholder {
-      position: absolute; inset: 0; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 10px;
-      color: var(--muted); background: linear-gradient(160deg, #11182b, #1a1430);
-      text-align: center; padding: 24px;
-    }
+    .term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: #0c0c0c; }
+    .term-bar .c { width: 11px; height: 11px; border-radius: 50%; background: #2a2a2a; }
+    .term-bar .t { margin-left: 10px; color: var(--dim); font-size: 0.74rem; letter-spacing: 0.5px; }
+    .term-body { padding: 18px 18px 22px; min-height: 330px; line-height: 1.85; }
+    .term-body .ascii { color: var(--accent); font-size: 0.62rem; line-height: 1.15; white-space: pre; margin-bottom: 14px; opacity: 0.9; }
+    .term-line { white-space: pre-wrap; }
+    .term-line .prompt { color: var(--accent); }
+    .term-line .cmd { color: var(--text); }
+    .term-line .out { color: var(--muted); }
+    .term-line .ok { color: var(--accent); }
+    .term-line .bar { color: var(--accent); letter-spacing: -1px; }
+    .cursor { display: inline-block; width: 8px; height: 1.05em; background: var(--accent); vertical-align: text-bottom; animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
 
-    /* Sections */
-    section { padding: 56px 0; }
-    h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); letter-spacing: -0.5px; margin-bottom: 8px; }
-    .section-sub { color: var(--muted); margin-bottom: 32px; }
+    /* ---------- marquee ---------- */
+    .marquee-wrap { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg-1); overflow: hidden; padding: 14px 0; }
+    .marquee { display: flex; gap: 40px; width: max-content; animation: scroll 32s linear infinite; }
+    .marquee span { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); display: inline-flex; align-items: center; gap: 40px; }
+    .marquee span::after { content: "/"; color: var(--accent-dim); }
+    @keyframes scroll { to { transform: translateX(-50%); } }
 
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-    .feature {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 22px;
+    /* ---------- problem grid ---------- */
+    .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px; }
+    .pain {
+      background: var(--bg); padding: 32px 30px; transition: background .2s;
     }
-    .feature .tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; }
-    .feature h3 { font-size: 1.12rem; margin: 10px 0 6px; }
-    .feature p { color: var(--muted); font-size: 0.95rem; }
+    .pain:hover { background: var(--bg-1); }
+    .pain .n { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); letter-spacing: 1px; }
+    .pain .ico { font-size: 1.5rem; margin: 14px 0 12px; display: block; }
+    .pain h3 { font-family: var(--mono); font-size: 1.12rem; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .pain p { color: var(--muted); font-size: 0.95rem; }
 
-    /* Install steps */
-    .steps { counter-reset: step; display: grid; gap: 16px; }
-    .step {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px 20px 18px 60px; position: relative;
+    /* ---------- flow diagram ---------- */
+    .flow { margin-top: 48px; display: grid; gap: 30px; }
+    .flow-row { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; }
+    .flow-label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
+    .node {
+      font-family: var(--mono); font-size: 0.82rem; background: var(--bg-1);
+      border: 1px solid var(--line-2); border-radius: 6px; padding: 14px 16px;
+      min-width: 120px; text-align: center; color: var(--text);
     }
-    .step::before {
-      counter-increment: step; content: counter(step);
-      position: absolute; left: 18px; top: 18px;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: linear-gradient(120deg, var(--accent2), #9b7bff);
-      color: #07101f; font-weight: 700; font-size: 0.9rem;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .step h4 { font-size: 1rem; margin-bottom: 4px; }
-    .step p { color: var(--muted); font-size: 0.92rem; }
-    code, pre {
-      font-family: "SF Mono", Menlo, Consolas, monospace;
-      background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-      border-radius: 8px; color: #d6e2ff;
-    }
-    code { padding: 2px 7px; font-size: 0.86rem; }
-    pre { padding: 14px 16px; overflow-x: auto; font-size: 0.86rem; margin-top: 10px; }
+    .node.bad { border-color: #3a2020; color: var(--muted); }
+    .node.good { border-color: var(--accent-dim); }
+    .node .sm { display: block; color: var(--dim); font-size: 0.68rem; margin-top: 4px; }
+    .arrow { display: flex; align-items: center; color: var(--accent); font-family: var(--mono); padding: 0 14px; font-size: 1.1rem; }
+    .flow-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px; padding: 26px; }
+    .flow-card.before { border-color: #2a1c1c; }
+    .flow-card.after { border-color: var(--accent-dim); }
+    .flow-card .tag { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; display: inline-flex; align-items: center; gap: 8px; }
+    .flow-card.before .tag { color: var(--warn); }
+    .flow-card.after .tag { color: var(--accent); }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-    footer { text-align: center; padding: 48px 0 64px; color: var(--muted); font-size: 0.88rem; border-top: 1px solid var(--border); margin-top: 24px; }
-    footer a { color: var(--accent2); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    /* ---------- features ---------- */
+    .feat-list { margin-top: 44px; border-top: 1px solid var(--line); }
+    .feat {
+      display: grid; grid-template-columns: 70px 1fr auto; gap: 24px; align-items: start;
+      padding: 30px 4px; border-bottom: 1px solid var(--line);
+    }
+    .feat .fn { font-family: var(--mono); color: var(--dim); font-size: 0.85rem; padding-top: 4px; }
+    .feat h3 { font-family: var(--mono); font-size: 1.22rem; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .feat p { color: var(--muted); font-size: 0.97rem; max-width: 560px; }
+    .feat .st { white-space: nowrap; }
+
+    /* ---------- stats / bars ---------- */
+    .bars { margin-top: 44px; display: grid; gap: 22px; max-width: 760px; }
+    .bar-row { font-family: var(--mono); }
+    .bar-head { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 8px; }
+    .bar-head .lab { color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.74rem; }
+    .bar-head .val { color: var(--accent); font-weight: 700; }
+    .bar-track { font-size: 0.9rem; letter-spacing: -1px; color: var(--line-2); position: relative; overflow: hidden; white-space: nowrap; }
+    .bar-fill { color: var(--accent); position: absolute; left: 0; top: 0; white-space: nowrap; width: 0; overflow: hidden; transition: width 1.4s cubic-bezier(.2,.8,.2,1); }
+
+    /* ---------- video ---------- */
+    .video-frame { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--line-2); aspect-ratio: 16/9; margin-top: 40px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+    .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+    /* ---------- install ---------- */
+    .steps { margin-top: 44px; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .step { background: var(--bg); padding: 24px 28px; display: grid; grid-template-columns: 60px 1fr; gap: 20px; align-items: start; }
+    .step .sn { font-family: var(--mono); color: var(--accent); font-size: 0.95rem; padding-top: 2px; }
+    .step h4 { font-family: var(--mono); font-size: 1.02rem; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: 0.93rem; }
+    pre, code { font-family: var(--mono); }
+    code { background: var(--bg-2); border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; font-size: 0.84rem; color: var(--accent); }
+    pre { background: #070707; border: 1px solid var(--line-2); border-radius: 6px; padding: 13px 15px; overflow-x: auto; font-size: 0.83rem; color: #cfe9d8; margin-top: 12px; }
+
+    /* ---------- faq ---------- */
+    .faq { margin-top: 44px; border-top: 1px solid var(--line); }
+    .qa { border-bottom: 1px solid var(--line); }
+    .qa summary {
+      list-style: none; cursor: pointer; padding: 24px 4px;
+      display: flex; align-items: center; gap: 18px;
+      font-family: var(--mono); font-size: 1.05rem; letter-spacing: -0.3px;
+    }
+    .qa summary::-webkit-details-marker { display: none; }
+    .qa summary .qn { color: var(--accent); font-size: 0.85rem; }
+    .qa summary .plus { margin-left: auto; color: var(--muted); font-family: var(--mono); transition: transform .2s; }
+    .qa[open] summary .plus { transform: rotate(45deg); color: var(--accent); }
+    .qa .ans { padding: 0 4px 26px 56px; color: var(--muted); font-size: 0.97rem; }
+
+    /* ---------- footer ---------- */
+    footer { padding: 56px 0; text-align: center; }
+    footer .brand { justify-content: center; margin-bottom: 14px; }
+    footer p { color: var(--dim); font-family: var(--mono); font-size: 0.8rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ---------- demo banner ---------- */
+    .topbar { background: rgba(62,224,127,0.07); border-bottom: 1px solid var(--accent-dim); text-align: center; padding: 9px 16px; font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.5px; color: var(--accent); }
+
+    /* ---------- scroll reveal ---------- */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 820px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .compare { grid-template-columns: 1fr; }
+      .feat { grid-template-columns: 50px 1fr; }
+      .feat .st { grid-column: 2; }
+      .nav-links a:first-child { display: none; }
+      section { padding: 76px 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="banner">
-    Demo &amp; project landing page — the Chrome Web Store listing is pending review. Install instructions below.
+  <div class="topbar">● DEMO BUILD — Chrome Web Store listing in review. Load-unpacked instructions below.</div>
+
+  <nav>
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="sq"></span> TailorTab</div>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="badge"><span class="dot"></span> Agent online</span>
+        <h1>Your new tab is<br /><span class="g">dead space.</span><br />Put it to work.</h1>
+        <p class="sub">Tell it what you want. An AI agent sources the data — live — and renders your new tab as a dashboard built around you. No keys. No setup.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#install">$ install</a>
+          <a class="btn btn-ghost" href="#demo">Watch demo</a>
+        </div>
+      </div>
+
+      <!-- TERMINAL -->
+      <div class="terminal reveal">
+        <div class="term-bar">
+          <span class="c"></span><span class="c"></span><span class="c"></span>
+          <span class="t">tailortab — agent</span>
+        </div>
+        <div class="term-body" id="term">
+          <div class="ascii">  ______      _ __           _______    __
+ /_  __/___ _(_) /___  ____/_  __/___ _/ /_
+  / / / __ `/ / / __ \/ ___// / / __ `/ __ \
+ / / / /_/ / / / /_/ / /   / / / /_/ / /_/ /
+/_/  \__,_/_/_/\____/_/   /_/  \__,_/_.___/</div>
+          <div id="term-out"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="wrap">
-    <header>
-      <div class="logo"><span class="dot"></span> TailorTab</div>
-      <h1>Your new tab,<br />built around you.</h1>
-      <p class="tagline">
-        Just tell it what you want to see — TailorTab turns your new tab into a live,
-        personalized dashboard, powered by an AI agent that sources data on demand.
-      </p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">View on GitHub</a>
-        <a class="btn btn-ghost" href="#install">How to install</a>
-      </div>
-    </header>
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee" id="marquee"></div>
+  </div>
 
-    <div class="video-section">
-      <div class="video-frame">
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[01]</span> The problem</div>
+        <h2>Every new tab is wasted.</h2>
+        <p class="lead">You open dozens a day. Each one starts you from nothing — or from a feed someone else picked.</p>
+      </div>
+      <div class="pain-grid reveal">
+        <div class="pain">
+          <span class="n">01</span>
+          <span class="ico">▢</span>
+          <h3>Blank by default</h3>
+          <p>A new tab gives you nothing. You retype the same URLs every single time.</p>
+        </div>
+        <div class="pain">
+          <span class="n">02</span>
+          <span class="ico">⧉</span>
+          <h3>Tab sprawl</h3>
+          <p>Markets, news, weather, scores — six tabs to start the day, six chances to get distracted.</p>
+        </div>
+        <div class="pain">
+          <span class="n">03</span>
+          <span class="ico">≣</span>
+          <h3>Someone else's feed</h3>
+          <p>Generic homepages optimize for their clicks, not your attention.</p>
+        </div>
+        <div class="pain">
+          <span class="n">04</span>
+          <span class="ico">⊟</span>
+          <h3>Frozen layouts</h3>
+          <p>Fixed dashboards only show what they were hardcoded to show. Your needs change. They don't.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[02]</span> The approach</div>
+        <h2>You ask. The agent sources it.</h2>
+        <p class="lead">One sentence in. The agent parses intent, finds the data — even from APIs it was never told about — and renders it.</p>
+      </div>
+
+      <div class="flow reveal">
+        <div>
+          <div class="flow-label">Pipeline</div>
+          <div class="flow-row">
+            <div class="node">"track the ISS"<span class="sm">plain English</span></div>
+            <div class="arrow">→</div>
+            <div class="node good">AGENT<span class="sm">parse intent</span></div>
+            <div class="arrow">→</div>
+            <div class="node good">PUBLIC API<span class="sm">sourced live</span></div>
+            <div class="arrow">→</div>
+            <div class="node good">WIDGET<span class="sm">on your tab</span></div>
+          </div>
+        </div>
+
+        <div class="compare">
+          <div class="flow-card before">
+            <span class="tag">● Before</span>
+            <div class="node bad" style="margin-bottom:10px;">6 browser tabs</div>
+            <div class="node bad" style="margin-bottom:10px;">6 manual searches</div>
+            <div class="node bad">3 logins + API keys</div>
+          </div>
+          <div class="flow-card after">
+            <span class="tag">✓ With TailorTab</span>
+            <div class="node good" style="margin-bottom:10px;">1 new tab</div>
+            <div class="node good" style="margin-bottom:10px;">1 sentence</div>
+            <div class="node good">0 keys, 0 setup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[03]</span> Capabilities</div>
+        <h2>What it actually does.</h2>
+      </div>
+      <div class="feat-list reveal">
+        <div class="feat">
+          <div class="fn">[A]</div>
+          <div>
+            <h3>The agent</h3>
+            <p>Ask for something it was never built for — live ISS position, an obscure stat — and it finds a public API, calls it, and renders the result. Not a fixed menu of sources.</p>
+          </div>
+          <div class="st"><span class="badge"><span class="dot"></span> Core</span></div>
+        </div>
+        <div class="feat">
+          <div class="fn">[B]</div>
+          <div>
+            <h3>Natural language, many widgets</h3>
+            <p>"Steelers news, AAPL and TSLA, weather in Pittsburgh" → three widgets, parsed and laid out automatically.</p>
+          </div>
+          <div class="st"><span class="badge">✓ Active</span></div>
+        </div>
+        <div class="feat">
+          <div class="fn">[C]</div>
+          <div>
+            <h3>Live data, zero keys</h3>
+            <p>Stocks, news, weather, crypto — streaming in with no sign-ups. The backend handles the complexity.</p>
+          </div>
+          <div class="st"><span class="badge">✓ Active</span></div>
+        </div>
+        <div class="feat">
+          <div class="fn">[D]</div>
+          <div>
+            <h3>Profiles</h3>
+            <p>Finance Bro opens with a live watchlist and market charts. Athlete, Techie, Newspaper, Local — tailored in one click.</p>
+          </div>
+          <div class="st"><span class="badge">✓ Active</span></div>
+        </div>
+        <div class="feat">
+          <div class="fn">[E]</div>
+          <div>
+            <h3>Yours, and it stays that way</h3>
+            <p>Widgets persist across every tab. Clock, fonts, timezone, rotating backgrounds — all configurable, all dark.</p>
+          </div>
+          <div class="st"><span class="badge">✓ Active</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[04]</span> The math</div>
+        <h2>Less friction. Measurably.</h2>
+      </div>
+      <div class="bars reveal">
+        <div class="bar-row">
+          <div class="bar-head"><span class="lab">Tabs to start your day</span><span class="val">6 → 1</span></div>
+          <div class="bar-track" data-fill="16%">████████████████████████████████████████████████</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-head"><span class="lab">API keys required</span><span class="val">0</span></div>
+          <div class="bar-track" data-fill="3%">████████████████████████████████████████████████</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-head"><span class="lab">Setup before first use</span><span class="val">~0 min</span></div>
+          <div class="bar-track" data-fill="5%">████████████████████████████████████████████████</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-head"><span class="lab">Data sources reachable</span><span class="val">the open web</span></div>
+          <div class="bar-track" data-fill="100%">████████████████████████████████████████████████</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section id="demo">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[05]</span> See it run</div>
+        <h2>Two minutes. Live.</h2>
+      </div>
+      <div class="video-frame reveal">
         <iframe
           src="https://www.youtube.com/embed/9jdIKpBV7TE"
           title="TailorTab demo"
@@ -155,76 +447,170 @@
           allowfullscreen></iframe>
       </div>
     </div>
+  </section>
 
-    <section>
-      <h2>What it does</h2>
-      <p class="section-sub">Ordered by what makes it powerful.</p>
-      <div class="features">
-        <div class="feature">
-          <div class="tag">The Agent</div>
-          <h3>Sources any API on demand</h3>
-          <p>Ask for something it was never hardcoded to do — like live ISS tracking — and the AI agent finds a public API, calls it, and renders it as a widget.</p>
-        </div>
-        <div class="feature">
-          <div class="tag">Natural language</div>
-          <h3>One prompt, many widgets</h3>
-          <p>"Steelers news, AAPL and TSLA prices, weather in Pittsburgh" becomes three separate widgets, laid out automatically.</p>
-        </div>
-        <div class="feature">
-          <div class="tag">Live data</div>
-          <h3>No API keys needed</h3>
-          <p>Stocks, news, weather, and crypto stream in live — no sign-ups or keys. The complexity is handled on the backend.</p>
-        </div>
-        <div class="feature">
-          <div class="tag">Profiles</div>
-          <h3>Tailored dashboards in one click</h3>
-          <p>Finance Bro opens with a live watchlist and market charts. Athlete, Techie, Newspaper, Local, and more — each ready instantly.</p>
-        </div>
-        <div class="feature">
-          <div class="tag">Personalization</div>
-          <h3>Yours, and it stays that way</h3>
-          <p>Widgets persist across every new tab. Customize the clock, fonts, timezone, and rotating backgrounds in a clean dark UI.</p>
-        </div>
+  <!-- INSTALL -->
+  <section id="install">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[06]</span> Run it</div>
+        <h2>Load unpacked. Two minutes.</h2>
+        <p class="lead">The Web Store listing is in review. Until then, run it locally — it's quick.</p>
       </div>
-    </section>
-
-    <section id="install">
-      <h2>Install it (load unpacked)</h2>
-      <p class="section-sub">While the Chrome Web Store listing is under review, you can run TailorTab locally in a couple of minutes.</p>
-      <div class="steps">
+      <div class="steps reveal">
         <div class="step">
-          <h4>Clone the repo</h4>
-          <p>Download the code from GitHub.</p>
-          <pre>git clone https://github.com/atinm12/TailorTab.git
+          <div class="sn">$ 01</div>
+          <div>
+            <h4>Clone</h4>
+            <p>Pull the source from GitHub.</p>
+            <pre>git clone https://github.com/atinm12/TailorTab.git
 cd TailorTab</pre>
+          </div>
         </div>
         <div class="step">
-          <h4>Install dependencies &amp; build</h4>
-          <p>Requires <a style="color:var(--accent2)" href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. This produces the <code>dist/</code> folder.</p>
-          <pre>npm install
+          <div class="sn">$ 02</div>
+          <div>
+            <h4>Build</h4>
+            <p>Needs <a style="color:var(--accent)" href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. Outputs the <code>dist/</code> folder.</p>
+            <pre>npm install
 npm run build</pre>
+          </div>
         </div>
         <div class="step">
-          <h4>Open Chrome extensions</h4>
-          <p>Go to <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top-right toggle).</p>
+          <div class="sn">$ 03</div>
+          <div>
+            <h4>Open extensions</h4>
+            <p>Go to <code>chrome://extensions</code> and enable <strong>Developer mode</strong> (top-right).</p>
+          </div>
         </div>
         <div class="step">
-          <h4>Load unpacked</h4>
-          <p>Click <strong>Load unpacked</strong> and select the <code>dist/</code> folder inside the project.</p>
+          <div class="sn">$ 04</div>
+          <div>
+            <h4>Load unpacked</h4>
+            <p>Click <strong>Load unpacked</strong> and select the <code>dist/</code> folder.</p>
+          </div>
         </div>
         <div class="step">
-          <h4>Open a new tab</h4>
-          <p>That's it — TailorTab now powers your new tab page. Type what you want to see, or pick a profile.</p>
+          <div class="sn">$ 05</div>
+          <div>
+            <h4>Open a new tab</h4>
+            <p>Done. Type what you want, or pick a profile.</p>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <footer>
-      <p>TailorTab — an AI-powered new tab dashboard.</p>
-      <p style="margin-top:6px;">
-        <a href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">Source on GitHub</a>
-      </p>
-    </footer>
-  </div>
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">[07]</span> Questions</div>
+        <h2>The short answers.</h2>
+      </div>
+      <div class="faq reveal">
+        <details class="qa">
+          <summary><span class="qn">Q1</span> Is it free?<span class="plus">+</span></summary>
+          <div class="ans">Yes. TailorTab is free and the source is public on GitHub.</div>
+        </details>
+        <details class="qa">
+          <summary><span class="qn">Q2</span> Do I need API keys?<span class="plus">+</span></summary>
+          <div class="ans">No. Stocks, news, weather, and crypto work out of the box. The OpenAI key that powers the agent lives on the backend — never on your machine.</div>
+        </details>
+        <details class="qa">
+          <summary><span class="qn">Q3</span> Is my data private?<span class="plus">+</span></summary>
+          <div class="ans">Your widgets and preferences are stored locally in your browser. The agent fetches data sources client-side, so your choices stay on your device.</div>
+        </details>
+        <details class="qa">
+          <summary><span class="qn">Q4</span> What can the agent actually fetch?<span class="plus">+</span></summary>
+          <div class="ans">Public APIs across the open web. If the data exists and is reachable, the agent can source it and shape it into a widget — even sources it was never hardcoded for.</div>
+        </details>
+        <details class="qa">
+          <summary><span class="qn">Q5</span> Why load unpacked instead of the Web Store?<span class="plus">+</span></summary>
+          <div class="ans">The Chrome Web Store listing is in review. Loading unpacked runs the exact same build today — no waiting.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand"><span class="sq"></span> TailorTab</div>
+      <p>An AI-powered new tab dashboard · <a href="https://github.com/atinm12/TailorTab" target="_blank" rel="noopener">github.com/atinm12/TailorTab</a></p>
+    </div>
+  </footer>
+
+  <script>
+    /* ---------- marquee ---------- */
+    (function () {
+      const words = ["Live stocks","Breaking news","Weather","Crypto","ISS tracking","Watchlists","Profiles","Any public API","Zero keys","Natural language","Market charts","Sports scores"];
+      const m = document.getElementById("marquee");
+      const make = () => {
+        const s = document.createElement("span");
+        s.textContent = words.join("      ");
+        return s;
+      };
+      m.appendChild(make());
+      m.appendChild(make()); // duplicate for seamless loop
+    })();
+
+    /* ---------- terminal typing ---------- */
+    (function () {
+      const out = document.getElementById("term-out");
+      const seq = [
+        { t: 220, html: '<span class="prompt">$</span> <span class="cmd">tailortab init</span>' },
+        { t: 380, html: '<span class="bar">[████████████]</span> <span class="out">loading agent...</span>' },
+        { t: 260, html: '<span class="ok">✓ agent online</span>' },
+        { t: 500, html: '<span class="prompt">$</span> <span class="cmd">"AAPL, TSLA, weather in Pittsburgh"</span>' },
+        { t: 320, html: '<span class="out">› parsing intent ........... 3 widgets</span>' },
+        { t: 300, html: '<span class="out">› sourcing yahoo finance ...</span> <span class="ok">✓</span>' },
+        { t: 300, html: '<span class="out">› sourcing open-meteo ......</span> <span class="ok">✓</span>' },
+        { t: 300, html: '<span class="out">› rendering dashboard ......</span> <span class="ok">✓</span>' },
+        { t: 260, html: '<span class="ok">done in 1.2s</span>' },
+        { t: 400, html: '<span class="prompt">$</span> <span class="cursor"></span>' },
+      ];
+      let i = 0;
+      function step() {
+        if (i >= seq.length) return;
+        const line = document.createElement("div");
+        line.className = "term-line";
+        line.innerHTML = seq[i].html;
+        // remove a trailing standalone cursor from the previous final line
+        out.appendChild(line);
+        i++;
+        if (i < seq.length) setTimeout(step, seq[i - 1].t);
+      }
+      // start when terminal scrolls into view
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { step(); io.disconnect(); }
+        });
+      }, { threshold: 0.4 });
+      io.observe(document.getElementById("term"));
+    })();
+
+    /* ---------- scroll reveal ---------- */
+    (function () {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            // animate bars when revealed
+            e.target.querySelectorAll(".bar-track[data-fill]").forEach((t) => {
+              if (!t.querySelector(".bar-fill")) {
+                const fill = document.createElement("span");
+                fill.className = "bar-fill";
+                fill.textContent = t.textContent;
+                t.appendChild(fill);
+                requestAnimationFrame(() => { fill.style.width = t.getAttribute("data-fill"); });
+              }
+            });
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    })();
+  </script>
 </body>
 </html>
