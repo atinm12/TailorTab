@@ -67,7 +67,7 @@ export default function App() {
   useEffect(() => {
     const style = document.body.style;
     if (background) {
-      style.backgroundImage = `linear-gradient(rgba(11, 13, 20, 0.72), rgba(11, 13, 20, 0.82)), url("${background}")`;
+      style.backgroundImage = `linear-gradient(rgba(10, 14, 24, 0.42), rgba(10, 14, 24, 0.58)), url("${background}")`;
       style.backgroundSize = "cover";
       style.backgroundPosition = "center";
     } else {

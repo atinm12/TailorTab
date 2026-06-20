@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Smart Homepage",
+  "name": "TailorTab",
   "version": "1.0.0",
   "description": "AI-powered personal dashboard that replaces your new tab page",
   "chrome_url_overrides": { "newtab": "index.html" },

@@ -49,12 +49,15 @@ body {
   font-weight: 200;
   letter-spacing: -1px;
   margin: 0;
+  /* legible over the bright photo background */
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
 }
 
 .clock-greeting {
-  color: var(--text-muted);
+  color: #e6e8ee;
   font-size: 16px;
   margin: 6px 0 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* ---- Prompt bar ---- */
@@ -132,9 +135,10 @@ body {
 /* ---- Empty state ---- */
 .empty-state {
   text-align: center;
-  color: var(--text-muted);
+  color: #d3d7e0;
   margin-top: 72px;
   font-size: 16px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
 .empty-hint em {
