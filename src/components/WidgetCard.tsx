@@ -68,7 +68,16 @@ export function WidgetCard({
             onClick={() => {
               // Called within the click (user gesture) so Chrome's prompt is allowed.
               requestAgentPermission().then((granted) => {
-                if (granted) state.retry();
+                if (granted) {
+                  if (typeof pendo !== "undefined") {
+                    pendo.track("browser_permission_granted", {
+                      granted: true,
+                      widgetType: config.type,
+                      widgetTitle: config.title,
+                    });
+                  }
+                  state.retry();
+                }
               });
             }}
           >

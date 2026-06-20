@@ -95,6 +95,16 @@ export async function fetchGeneric(
   if (!mapping) {
     mapping = await deriveMapping(contextLabel, raw);
     opts.persistMapping?.(mapping);
+    if (typeof pendo !== "undefined") {
+      pendo.track("generic_widget_mapping_resolved", {
+        widgetTitle: contextLabel,
+        sourceName: params.sourceName ?? "",
+        sourceUrl: request.url,
+        hasRows: (mapping.rows?.length ?? 0) > 0,
+        hasList: !!mapping.list,
+        rowCount: mapping.rows?.length ?? 0,
+      });
+    }
   }
   return applyMapping(raw, mapping);
 }

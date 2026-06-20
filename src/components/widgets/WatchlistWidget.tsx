@@ -26,12 +26,28 @@ export function WatchlistWidget({ data, config, onUpdateParams }: Props) {
       setInput("");
       return;
     }
-    onUpdateParams(config.id, { symbols: [...symbols, sym] });
+    const newSymbols = [...symbols, sym];
+    onUpdateParams(config.id, { symbols: newSymbols });
+    if (typeof pendo !== "undefined") {
+      pendo.track("watchlist_ticker_added", {
+        symbol: sym,
+        totalSymbolsAfter: newSymbols.length,
+        widgetId: config.id,
+      });
+    }
     setInput("");
   }
 
   function removeSymbol(sym: string) {
-    onUpdateParams(config.id, { symbols: symbols.filter((s) => s !== sym) });
+    const newSymbols = symbols.filter((s) => s !== sym);
+    onUpdateParams(config.id, { symbols: newSymbols });
+    if (typeof pendo !== "undefined") {
+      pendo.track("watchlist_ticker_removed", {
+        symbol: sym,
+        totalSymbolsAfter: newSymbols.length,
+        widgetId: config.id,
+      });
+    }
   }
 
   // Render in the user's configured order; pair each symbol with its quote.
