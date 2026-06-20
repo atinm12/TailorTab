@@ -116,16 +116,36 @@ export default function App() {
       try {
         const configs = await parsePrompt(prompt, Object.keys(apiKeys));
         setActiveWidgets((prev) => [...prev, ...configs]);
+        if (typeof pendo !== "undefined") {
+          pendo.track("widget_created_via_prompt", {
+            prompt: prompt.slice(0, 200),
+            widgetCount: configs.length,
+            widgetTypes: configs.map((c) => c.type).join(","),
+            activeProfileId: activeProfile,
+            hadUnsupported: configs.some((c) => c.type === "unsupported"),
+          });
+        }
       } finally {
         setParsing(false);
       }
     },
-    [apiKeys, setActiveWidgets],
+    [apiKeys, setActiveWidgets, activeProfile],
   );
 
   const removeWidget = useCallback(
-    (id: string) => setActiveWidgets((prev) => prev.filter((w) => w.id !== id)),
-    [setActiveWidgets],
+    (id: string) => {
+      const widget = widgets.find((w) => w.id === id);
+      setActiveWidgets((prev) => prev.filter((w) => w.id !== id));
+      if (typeof pendo !== "undefined" && widget) {
+        pendo.track("widget_removed", {
+          widgetId: id,
+          widgetType: widget.type,
+          widgetTitle: widget.title,
+          activeProfileId: activeProfile,
+        });
+      }
+    },
+    [setActiveWidgets, widgets, activeProfile],
   );
 
   const handleMappingResolved = useCallback(
@@ -151,15 +171,20 @@ export default function App() {
   // --- profile switching
   const selectProfile = useCallback(
     (id: ProfileId, pickedCity?: string) => {
+      const previousProfileId = activeProfile;
       const useCity = pickedCity ?? city;
       if (pickedCity && id === "local") {
         setCity(pickedCity);
         saveLocalCity(pickedCity);
       }
+      let isNewProfile = false;
+      let seededWidgetCount = 0;
       setProfileWidgets((prev) => {
         // Seed if unseen; for Local, (re)seed whenever a city is explicitly chosen.
         const needsSeed = !prev[id] || (id === "local" && !!pickedCity);
+        isNewProfile = needsSeed;
         const next = needsSeed ? { ...prev, [id]: seedWidgets(id, { city: useCity }) } : prev;
+        seededWidgetCount = (next[id] ?? []).length;
         if (needsSeed) saveProfileWidgets(next);
         return next;
       });
@@ -167,18 +192,35 @@ export default function App() {
       saveActiveProfile(id);
       setPickerOpen(false);
       rerollBackground(id);
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_selected", {
+          profileId: id,
+          previousProfileId,
+          city: useCity,
+          isNewProfile,
+          seededWidgetCount,
+        });
+      }
     },
-    [city, rerollBackground],
+    [city, rerollBackground, activeProfile],
   );
 
   const resetProfile = useCallback(() => {
+    const previousWidgetCount = widgets.length;
     const fresh = seedWidgets(activeProfile, { city });
     setProfileWidgets((prev) => {
       const next = { ...prev, [activeProfile]: fresh };
       saveProfileWidgets(next);
       return next;
     });
-  }, [activeProfile, city]);
+    if (typeof pendo !== "undefined") {
+      pendo.track("profile_reset", {
+        profileId: activeProfile,
+        previousWidgetCount,
+        newWidgetCount: fresh.length,
+      });
+    }
+  }, [activeProfile, city, widgets]);
 
   // --- settings / keys / prefs
   const handleSaveKeys = useCallback((keys: ApiKeys) => {
@@ -188,6 +230,14 @@ export default function App() {
 
   const updatePrefs = useCallback((patch: Partial<Prefs>) => {
     setPrefs((prev) => {
+      const key = Object.keys(patch)[0] as keyof Prefs | undefined;
+      if (typeof pendo !== "undefined" && key) {
+        pendo.track("preferences_updated", {
+          settingName: key,
+          newValue: String(patch[key]),
+          previousValue: String(prev[key]),
+        });
+      }
       const next = { ...prev, ...patch };
       savePrefs(next);
       return next;

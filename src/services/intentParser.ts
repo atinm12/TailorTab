@@ -104,12 +104,24 @@ export async function parsePrompt(prompt: string, keyNames: string[] = []): Prom
       .filter((c): c is WidgetConfig => c !== null);
 
     if (configs.length === 0) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("prompt_parse_failed", {
+          prompt: prompt.slice(0, 200),
+          errorMessage: "Couldn't interpret that — try rephrasing it.",
+        });
+      }
       return [unsupported(prompt, undefined, "Couldn't interpret that — try rephrasing it.")];
     }
     return configs;
   } catch (err) {
     console.error("Prompt parsing failed:", err);
     const message = err instanceof Error ? err.message : "Unknown error";
+    if (typeof pendo !== "undefined") {
+      pendo.track("prompt_parse_failed", {
+        prompt: prompt.slice(0, 200),
+        errorMessage: message.slice(0, 200),
+      });
+    }
     return [unsupported(prompt, undefined, message)];
   }
 }

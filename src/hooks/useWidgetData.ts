@@ -93,24 +93,40 @@ export function useWidgetData(
       })
       .catch((err: unknown) => {
         if (controller.signal.aborted) return;
+        let errorMessage: string;
+        let keyName: string | undefined;
+        let needsPermission = false;
         if (err instanceof KeyMissingError) {
+          keyName = err.keyName;
+          errorMessage = `Missing API key: ${err.keyName}`;
           setState({
             status: "error",
             message: `This source needs an API key named “${err.keyName}”.`,
             keyName: err.keyName,
           });
-          return;
-        }
-        if (err instanceof PermissionNeededError) {
+        } else if (err instanceof PermissionNeededError) {
+          needsPermission = true;
+          errorMessage = "Permission needed";
           setState({
             status: "error",
             message: "Any-source widgets need permission to fetch from websites.",
             needsPermission: true,
           });
-          return;
+        } else {
+          errorMessage = err instanceof Error ? err.message : "Something went wrong";
+          setState({ status: "error", message: errorMessage });
         }
-        const message = err instanceof Error ? err.message : "Something went wrong";
-        setState({ status: "error", message });
+        if (typeof pendo !== "undefined") {
+          pendo.track("widget_data_fetch_failed", {
+            widgetType: config.type,
+            widgetId: config.id,
+            widgetTitle: config.title,
+            errorMessage: errorMessage.slice(0, 200),
+            needsApiKey: !!keyName,
+            keyName: keyName ?? "",
+            needsPermission,
+          });
+        }
       });
     return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps

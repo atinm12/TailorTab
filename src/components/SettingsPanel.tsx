@@ -56,7 +56,15 @@ export function SettingsPanel({
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed || !value.trim()) return;
-    onSaveKeys({ ...apiKeys, [trimmed]: value.trim() });
+    const newKeys = { ...apiKeys, [trimmed]: value.trim() };
+    onSaveKeys(newKeys);
+    if (typeof pendo !== "undefined") {
+      pendo.track("api_key_added", {
+        keyName: trimmed,
+        totalKeysAfter: Object.keys(newKeys).length,
+        wasPrefilled: trimmed === prefillName,
+      });
+    }
     setName("");
     setValue("");
   }
@@ -65,6 +73,12 @@ export function SettingsPanel({
     const next = { ...apiKeys };
     delete next[key];
     onSaveKeys(next);
+    if (typeof pendo !== "undefined") {
+      pendo.track("api_key_removed", {
+        keyName: key,
+        totalKeysAfter: Object.keys(next).length,
+      });
+    }
   }
 
   return (
