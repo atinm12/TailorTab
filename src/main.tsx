@@ -7,6 +7,12 @@ import { initializePendo } from "./analytics/pendo";
 // Boot Novus analytics before rendering so the agent captures the first page view.
 initializePendo();
 
+pendo.initialize({
+  visitor: {
+    id: ''
+  }
+});
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
