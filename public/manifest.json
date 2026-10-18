@@ -1,23 +1,16 @@
 {
   "manifest_version": 3,
   "name": "TailorTab",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered personal dashboard that replaces your new tab page",
   "chrome_url_overrides": { "newtab": "index.html" },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' https://cdn.pendo.io; object-src 'self'"
-  },
   "host_permissions": [
     "https://site.api.espn.com/*",
     "https://query1.finance.yahoo.com/*",
     "https://news.google.com/*",
     "https://api.open-meteo.com/*",
     "https://geocoding-api.open-meteo.com/*",
-    "https://smart-homepage-api.tailortab.workers.dev/*",
-    "https://cdn.pendo.io/*",
-    "https://app.pendo.io/*",
-    "https://pendo-io-static.storage.googleapis.com/*",
-    "http://localhost:8787/*"
+    "https://smart-homepage-api.tailortab.workers.dev/*"
   ],
   "optional_host_permissions": ["https://*/*"],
   "icons": {
