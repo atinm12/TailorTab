@@ -1,4 +1,4 @@
-# Smart Homepage — backend (Cloudflare Workers)
+# TailorTab — backend (Cloudflare Workers)
 
 A tiny proxy that holds your OpenAI key so the extension ships with **no secrets** and
 **no `https://*/*` permission**. It exposes three endpoints, all rate-limited per device:

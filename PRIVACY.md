@@ -1,8 +1,8 @@
-# Smart Homepage — Privacy Policy
+# TailorTab — Privacy Policy
 
 _Last updated: June 16, 2026_
 
-Smart Homepage ("the Extension") is a Chrome extension that replaces your new tab
+TailorTab ("the Extension") is a Chrome extension that replaces your new tab
 page with a personal dashboard. This policy explains what data the Extension
 handles and where it goes. **We do not have user accounts, we do not show ads, and
 we do not sell or share your data for advertising.**
